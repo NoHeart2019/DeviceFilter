@@ -1,0 +1,107 @@
+[Version]
+Signature=$Windows NT$
+Provider=%little River%
+Class=DeviceFilterClass
+ClassGUID={xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}
+Provider=%little River%
+DriverVer = 08/01/2018,1.0.18.0801
+CatalogFile =
+
+[Manufacturer]
+%little River%=little River,NTx86,NTamd64
+
+;-------------------------------------------------------------------------
+; Installation Section
+;-------------------------------------------------------------------------
+
+[DefaultInstall.NTx86]
+CopyFiles = DeviceFilter.AddFiles
+Addreg = DeviceFilter.AddReg
+CopyINF=DeviceFilter.inf
+
+[DefaultInstall.NTamd64]
+CopyFiles = DeviceFilter64.AddFiles
+Addreg = DeviceFilter.AddReg
+CopyINF=DeviceFilter.inf
+
+[DefaultInstall.NTx86.Services]
+AddService=DeviceFilter,,FilterService.NTx86
+
+[DefaultInstall.NTamd64.Services]
+AddService=DeviceFilter,,FilterService.amd64
+
+;-------------------------------------------------------------------------
+; UnInstallation Section
+;-------------------------------------------------------------------------
+
+[DefaultUninstall.NTx86]
+DelFiles = DeviceFilter.DelFiles
+DelReg = DeviceFilter.DelReg
+
+[DefaultUninstall.NTamd64]
+DelFiles = DeviceFilter64.DelFiles
+DelReg = DeviceFilter.DelReg
+
+[DefaultUninstall.NTx86.Services]
+DelService = DeviceFilter,0x204
+
+[DefaultUninstall.NTamd64.Services]
+DelService = DeviceFilter,0x204
+
+;-------------------------------------------------------------------------
+; File copy
+;-------------------------------------------------------------------------
+
+[DestinationDirs]
+DefaultDestDir=10,system32\drivers
+
+[DeviceFilter.AddFiles]
+DeviceFilter.sys,,,0x0A     ; 8 = COPYFLG_FORCE_FILE_IN_USE, 2 = COPYFLG_NOSKIP
+
+[DeviceFilter64.AddFiles]
+DeviceFilter64.sys,,,0x0A
+
+[DeviceFilter.DelFiles]
+DeviceFilter.sys,,,1        ; DELFLG_IN_USE
+
+[DeviceFilter64.DelFiles]
+DeviceFilter64.sys,,,1
+
+;-------------------------------------------------------------------------
+; Service installation
+;-------------------------------------------------------------------------
+
+[FilterService.NTx86]
+DisplayName = %DESCRIPTION%
+ServiceType = 1 ;SERVICE_KERNEL_DRIVER
+StartType   = 0 ; SERVICE_BOOT_START
+ErrorControl= 1 ; SERVICE_ERROR_NORMAL
+ServiceBinary=%10%\system32\drivers\DeviceFilter.sys
+AddReg = AddInstance
+
+[FilterService.amd64]
+DisplayName = %DESCRIPTION%
+ServiceType = 1 ;SERVICE_KERNEL_DRIVER
+StartType   = 0 ; SERVICE_BOOT_START
+ErrorControl= 1 ; SERVICE_ERROR_NORMAL
+ServiceBinary=%10%\system32\drivers\DeviceFilter64.sys
+AddReg = AddInstance
+
+[AddInstance]
+HKR, Instances, DefaultInstance, 0, DeviceFilter
+HKR, Instances\DeviceFilter, Altitude, 0, 201808
+HKR, Instances\DeviceFilter, Flags, 0x00010001, 0
+
+[DeviceFilter.AddReg]
+HKLM, System\CurrentControlSet\Control\Class\{xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}, UpperFilters, 0x00010008, DeviceFilter
+
+[DeviceFilter.DelReg]
+HKLM, System\CurrentControlSet\Control\Class\{xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}, UpperFilters, 0x00018002, DeviceFilter
+
+;------------------------------------------------------------------------------
+;  String Definitions
+;------------------------------------------------------------------------------
+
+[Strings]
+little River="little River Labs"
+DESCRIPTION="DeviceFilter Filter Driver"
